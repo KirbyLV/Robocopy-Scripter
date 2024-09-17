@@ -92,6 +92,18 @@ def excludeHelp():
     excludeHelpMsg = "Use spaces to separate files; " + '\n' + "Use * as wildcard, ex: *.txt excludes all txt files; " + '\n' + "Use ? as individual letter wildcard"
     tkinter.messagebox.showinfo(title="Exclusion Formatting", message= excludeHelpMsg)
 
+def saveToFile():
+    filePath = tkinter.filedialog.asksaveasfilename(defaultextension=".bat", filetypes=[("Batch Files", "*.bat"), ("Text Files", "*.txt"), ("All Files", "*.*")])
+    if filePath:
+        try:
+            with open(filePath, 'w') as file:
+                textContent = resultTextbox.get("0.0", "end")
+                file.write(textContent)
+            saveStatusLabel.configure(text = "File Saved")
+        except Exception as e:
+            saveStatusLabel.configure(text = f"Error Saving File: {str(e)}")
+
+
 #endregion
 #region Window Elements
 headerLabel = customtkinter.CTkLabel(master=headerFrame, text="Robocopy Script Builder")
@@ -101,7 +113,7 @@ execButton = customtkinter.CTkButton(master=execFrame, text="Generate Robocopy S
 execButton.pack(anchor="center")
 
 resultLabel = customtkinter.CTkLabel(master=outputFrame, text="")
-resultLabel.pack(anchor = "w")
+resultLabel.grid(row = 0, column = 0, columnspan = 2)
 
 #Source and Directory Buttons
 sourceLabel = customtkinter.CTkLabel(master=fileFrame, text="Source:")
@@ -132,7 +144,7 @@ optPurge.grid(row = 0, column = 1, padx = 10)
 optExcludeNewer = customtkinter.CTkCheckBox(master=optionsFrame, text="Exclude Newer Files in Dest", variable=optNewerStr, onvalue="/XN", offvalue="")
 optExcludeNewer.grid(row = 0, column = 2, padx = 10)
 
-excludeLabel = customtkinter.CTkLabel(master=optionsFrame, text="Exclude:", anchor="e", justify ="right")
+excludeLabel = customtkinter.CTkLabel(master=optionsFrame, text="Exclude Files:", anchor="e", justify ="right")
 excludeLabel.grid(row = 2, column = 0, sticky = "e")
 
 excludeField = customtkinter.CTkEntry(master=optionsFrame, width=300, textvariable=excludeStr)
@@ -143,10 +155,16 @@ excludeHelpButton.grid(row = 2, column = 3, sticky = "w")
 
 #Results Setup
 resultTextbox = customtkinter.CTkTextbox(master=outputFrame, width=700)
-resultTextbox.pack(anchor = "w")
+resultTextbox.grid(row = 1, column = 0, columnspan = 2)
 
 copyButton = customtkinter.CTkButton(master=outputFrame, text="Copy Result", command=copyResultStr)
-copyButton.pack(anchor = "center")
+copyButton.grid(row = 2, column = 0)
+
+saveButton = customtkinter.CTkButton(master=outputFrame, text="Save BAT File", command=saveToFile)
+saveButton.grid(row = 2, column = 1)
+
+saveStatusLabel = customtkinter.CTkLabel(master=outputFrame, text= "", text_color= "red")
+saveStatusLabel.grid(row = 3, column = 0, columnspan = 2)
 
 #endregion
 root.mainloop()
